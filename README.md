@@ -92,9 +92,9 @@ Cargos iniciales: coordinador general, vicecoordinador, coordinador de campament
 | Parte                | Tecnología                                             |
 | -------------------- | ------------------------------------------------------ |
 | Back                 | Node.js + Express (API REST)                           |
-| Base de datos        | MySQL / MariaDB (XAMPP + phpMyAdmin en desarrollo)     |
+| Base de datos        | PostgreSQL en Supabase (librería `pg` desde Express)   |
 | Front                | HTML + JavaScript + Tailwind CSS (React en evaluación) |
-| Seguridad            | bcrypt (contraseñas) + JWT (sesión)                    |
+| Seguridad            | bcrypt (contraseñas) + JWT (sesión), login propio      |
 | Pruebas de API       | Thunder Client                                         |
 | Control de versiones | Git + GitHub                                           |
 
@@ -105,13 +105,15 @@ Cargos iniciales: coordinador general, vicecoordinador, coordinador de campament
 Back y front **separados**. El front pide datos a la API y la API responde en JSON.
 
 ```
-┌──────────────┐   petición HTTP   ┌───────────────┐   SQL   ┌─────────┐
-│    Front     │ ────────────────► │  API Express  │ ──────► │  MySQL  │
-│ (navegador)  │ ◄──────────────── │   (Node.js)   │ ◄────── │         │
-└──────────────┘    respuesta JSON └───────────────┘         └─────────┘
+┌──────────────┐   petición HTTP   ┌───────────────┐   SQL   ┌──────────────┐
+│    Front     │ ────────────────► │  API Express  │ ──────► │  PostgreSQL  │
+│ (navegador)  │ ◄──────────────── │   (Node.js)   │ ◄────── │  (Supabase)  │
+└──────────────┘    respuesta JSON └───────────────┘         └──────────────┘
 ```
 
 Flujo de seguridad: login → token JWT → middleware de autenticación → middleware de permisos → controlador.
+
+Supabase se usa **solo como base de datos** (PostgreSQL en la nube). El login es propio (bcrypt + JWT); no se usa Supabase Auth.
 
 ---
 
@@ -158,7 +160,7 @@ Decisiones de diseño:
 - Las relaciones muchos a muchos se resuelven con **tablas intermedias**.
 - Las cantidades de cada ingrediente se guardan en la tabla intermedia receta–ingrediente.
 
-El diagrama entidad-relación estará en `docs/`.
+El diagrama entidad-relación estará en `docs/` y el modelo relacional está en [`docs/modelo-relacional.md`](docs/modelo-relacional.md).
 
 ---
 
@@ -166,9 +168,12 @@ El diagrama entidad-relación estará en `docs/`.
 
 **Base de datos**
 
-- Nombres en minúsculas con guion bajo (`snake_case`).
+- Nombres en minúsculas con guion bajo (`snake_case`), sin tildes ni ñ (`contrasena`, `num_ninos`).
 - Tablas en plural (`recetas`, `ingredientes`).
-- Tablas intermedias con los dos nombres (`receta_ingrediente`).
+- Tablas intermedias con los dos nombres en singular (`receta_ingrediente`).
+- Clave primaria: `id_` + nombre en singular (`id_receta`).
+- Cada clave foránea se llama igual que la clave primaria a la que apunta (`id_tipo` en `actividades`).
+- Booleanos con prefijo `es_`, `apto_` o `hay` (`es_admin`, `apto_vegano`).
 
 **Commits** · [Conventional Commits](https://www.conventionalcommits.org/es/)
 
@@ -206,5 +211,5 @@ Ejemplo: `feat(back): añade login con JWT`
 Requisitos previstos:
 
 - Node.js (versión LTS)
-- XAMPP (MySQL/MariaDB + phpMyAdmin)
+- Una cuenta de Supabase con un proyecto creado (la cadena de conexión va en el archivo de variables de entorno, que no se sube a Git)
 - Git

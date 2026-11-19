@@ -3,11 +3,13 @@ import express from "express";
 import cors from "cors";
 import pool from "./config/db.js";
 import seccionesRoutes from "./routes/secciones.routes.js";
+import authRoutes from "./routes/auth.routes.js"
 
 const app = express(); // crea la aplicacion
 
 app.use(cors()); //permite al front llamar a la api
 app.use(express.json()); //permite leer el json
+app.use("/api/auth", authRoutes);
 
 app.get("/", (req, res) => {
   res.json({ mensaje: "API del TFG Mansaborá funcionando" }); //cuando alguien hace get es lo que se ejecuta

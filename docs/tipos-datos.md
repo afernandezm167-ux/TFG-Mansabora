@@ -1,15 +1,10 @@
 # Tipos de datos de la base de datos
 
-Propuesta de tipo y restricciones para cada columna (PostgreSQL). **Pendiente de revisar por Alba.**
-
-- **PK** = clave primaria. Si una tabla tiene varias columnas con PK, la clave es compuesta.
-- **FK → tabla** = clave foránea. Su tipo es el mismo que el de la clave primaria a la que apunta, pero sin identity.
-- Las columnas que forman la clave primaria no hace falta marcarlas como NOT NULL: PRIMARY KEY ya lo incluye.
-- Una columna sin NOT NULL puede quedarse vacía (NULL).
+- **PK** = clave primaria (si hay varias en una tabla, es compuesta).
+- **FK → tabla** = clave foránea.
+- Sin NOT NULL = puede quedar vacía.
 
 ## Tipos ENUM
-
-Se crean antes que las tablas que los usan.
 
 | Nombre del tipo | Valores | Se usa en |
 |---|---|---|
@@ -57,7 +52,7 @@ Se crean antes que las tablas que los usan.
 |---|---|---|---|
 | id_relleno | PK | INTEGER GENERATED ALWAYS AS IDENTITY | PRIMARY KEY |
 | nombre |  | VARCHAR(100) | NOT NULL, UNIQUE |
-| max_veces |  | INTEGER | CHECK (max_veces > 0). Vacío = sin límite |
+| max_veces |  | INTEGER | CHECK (max_veces > 0) |
 
 ### receta_ingrediente
 
@@ -66,7 +61,7 @@ Se crean antes que las tablas que los usan.
 | id_receta | PK, FK → recetas | INTEGER | NOT NULL |
 | id_ingrediente | PK, FK → ingredientes | INTEGER | NOT NULL |
 | cantidad |  | NUMERIC(8,3) | NOT NULL, CHECK (cantidad > 0) |
-| unidad |  | VARCHAR(20) | NOT NULL. Texto libre: g, kg, ml, l, unidad, cucharada, lata… |
+| unidad |  | VARCHAR(20) | NOT NULL |
 
 ### receta_momento
 
@@ -89,7 +84,7 @@ Se crean antes que las tablas que los usan.
 | id_relleno | PK, FK → rellenos | INTEGER | NOT NULL |
 | id_ingrediente | PK, FK → ingredientes | INTEGER | NOT NULL |
 | cantidad |  | NUMERIC(8,3) | NOT NULL, CHECK (cantidad > 0) |
-| unidad |  | VARCHAR(20) | NOT NULL. Texto libre: g, kg, ml, l, unidad, cucharada, lata… |
+| unidad |  | VARCHAR(20) | NOT NULL |
 
 ## Bloque 2 · Actividades
 
@@ -106,7 +101,7 @@ Se crean antes que las tablas que los usan.
 |---|---|---|---|
 | id_actividad | PK | INTEGER GENERATED ALWAYS AS IDENTITY | PRIMARY KEY |
 | denominacion |  | VARCHAR(150) | NOT NULL |
-| duracion |  | INTEGER | NOT NULL, CHECK (duracion > 0). En minutos |
+| duracion |  | INTEGER | NOT NULL, CHECK (duracion > 0) |
 | descripcion |  | TEXT | NOT NULL |
 | objetivos |  | TEXT |  |
 | metodo_evaluacion |  | TEXT |  |
@@ -164,7 +159,7 @@ Se crean antes que las tablas que los usan.
 | id_actividad | PK, FK → actividades | INTEGER | NOT NULL |
 | id_epoca | PK, FK → epocas | INTEGER | NOT NULL |
 | obligatoria_diaria |  | BOOLEAN | NOT NULL, DEFAULT false |
-| franja |  | franja (ENUM) | Vacío si no es obligatoria diaria (ver restricciones de tabla) |
+| franja |  | franja (ENUM) |  |
 
 ### actividad_material
 
@@ -182,7 +177,7 @@ Se crean antes que las tablas que los usan.
 | id_usuario | PK | INTEGER GENERATED ALWAYS AS IDENTITY | PRIMARY KEY |
 | nombre |  | VARCHAR(100) | NOT NULL |
 | email |  | VARCHAR(255) | NOT NULL, UNIQUE |
-| contrasena |  | CHAR(60) | NOT NULL. El hash de bcrypt siempre mide 60 |
+| contrasena |  | CHAR(60) | NOT NULL |
 | es_admin |  | BOOLEAN | NOT NULL, DEFAULT false |
 
 ### cargos
@@ -260,7 +255,8 @@ Se crean antes que las tablas que los usan.
 | num_dias |  | INTEGER | NOT NULL, CHECK (num_dias > 0) |
 | fecha_inicio |  | DATE | NOT NULL |
 | fecha_creacion |  | TIMESTAMP | NOT NULL, DEFAULT CURRENT_TIMESTAMP |
-| id_usuario | FK → usuarios | INTEGER | NOT NULL |
+| creado_por |  | VARCHAR(100) | NOT NULL |
+| id_usuario | FK → usuarios | INTEGER |  |
 | id_epoca | FK → epocas | INTEGER | NOT NULL |
 | id_tematica | FK → tematicas | INTEGER | NOT NULL |
 
@@ -306,7 +302,7 @@ Se crean antes que las tablas que los usan.
 | dia |  | INTEGER | NOT NULL, CHECK (dia >= 1) |
 | id_momento | FK → momentos | INTEGER | NOT NULL |
 | plato |  | tipo_plato (ENUM) | NOT NULL |
-| id_dieta | FK → dietas | INTEGER | Puede ir vacío: vacío = menú normal |
+| id_dieta | FK → dietas | INTEGER |  |
 
 ### campamento_relleno
 
@@ -318,10 +314,6 @@ Se crean antes que las tablas que los usan.
 
 ## Restricciones de tabla
 
-Afectan a varias columnas a la vez, así que se escriben al final de la tabla.
-
-| Tabla | Restricción | Para qué |
-|---|---|---|
-| actividad_epoca | CHECK (obligatoria_diaria = false OR franja IS NOT NULL) | Si una actividad es obligatoria diaria, tiene que decir en qué franja va |
-| todas las intermedias y stock | PRIMARY KEY (columna1, columna2) | Clave primaria compuesta |
-| campamento_relleno | PRIMARY KEY (id_campamento, dia) | Un solo relleno por día |
+| Tabla | Restricción |
+|---|---|
+| actividad_epoca | CHECK (obligatoria_diaria = false OR franja IS NOT NULL) |

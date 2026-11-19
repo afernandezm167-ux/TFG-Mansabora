@@ -54,7 +54,7 @@ Paso del diagrama entidad-relación a tablas.
 
 ## Bloque 5 · Campamentos
 
-- **campamentos** (**id_campamento**, lugar, num_ninos, num_dias, fecha_inicio, fecha_creacion, id_usuario → usuarios, id_epoca → epocas, id_tematica → tematicas)
+- **campamentos** (**id_campamento**, lugar, num_ninos, num_dias, fecha_inicio, fecha_creacion, creado_por, id_usuario → usuarios, id_epoca → epocas, id_tematica → tematicas). id_usuario puede quedar vacío si se borra el usuario; creado_por guarda su nombre.
 - **dietas** (**id_dieta**, nombre)
 - **dieta_alergeno** (**id_dieta** → dietas, **id_alergeno** → alergenos)
 - **campamento_dieta** (**id_campamento** → campamentos, **id_dieta** → dietas, num_personas)
@@ -67,4 +67,5 @@ Paso del diagrama entidad-relación a tablas.
 1. **campamento_actividad y campamento_receta tienen un id propio.** La misma actividad puede salir dos veces en un campamento, en días distintos, y la misma receta puede aparecer como menú normal y como alternativa. Con la clave (id_campamento, id_actividad) no se podría repetir.
 2. **El momento y la dieta de campamento_receta son claves foráneas**, no texto libre: así se usan los valores de las tablas momentos y dietas, y "cena" no puede escribirse de dos formas.
 3. **campamento_relleno tiene la clave (id_campamento, dia)** porque cada día lleva un solo relleno de bocadillo.
-4. **stock** no se llama prenda_talla (como diría la convención) porque el nombre explica mejor lo que guarda.
+4. **Quién creó el campamento se guarda dos veces.** id_usuario enlaza con el usuario mientras exista; creado_por guarda su nombre como texto en el momento de crear el campamento. Así un usuario se puede borrar siempre: id_usuario se queda vacío, pero el campamento sigue diciendo quién lo hizo.
+5. **stock** no se llama prenda_talla (como diría la convención) porque el nombre explica mejor lo que guarda.

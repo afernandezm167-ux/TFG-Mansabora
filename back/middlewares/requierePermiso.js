@@ -1,9 +1,9 @@
-import { comprobarPermiso } from "../models/socios.model.js";
+import { comprobarPermiso } from "../models/usuarios.model.js";
 
 //devuelve un middleware que solo deja pasar si el socio es admin o tiene permiso
 
-export function requierPermiso(permiso) {
-    return async (req, req, next) => {
+export function requierePermiso(permiso) {
+    return async (req, res, next) => {
         try {
             const resultado = await comprobarPermiso(req.idUsuario, permiso);
 

@@ -7,3 +7,11 @@ export async function obtenerSecciones() {
   );
   return resultado.rows; // las filas vienen dentro de .rows
 }
+
+export async function insertarSeccion(nombre) {
+  const resultado = await pool.query(
+    `INSERT INTO secciones (nombre) VALUES ($1) RETURNING id_seccion, nombre`,
+    [nombre],
+  );
+  return resultado.rows[0];
+}
